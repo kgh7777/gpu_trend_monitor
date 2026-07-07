@@ -51,3 +51,20 @@ kgh07/gpu_trend_monitor:v1.0
 이 테스트는 qwen에게 지속상태(기억)을 만들어 주기 위해 테스트를 10 번 행하고 그 결과를 파일에 기록하고 추세를 판단하게 하였다.
 
 ########################
+
+
+tar -xzf trend_docker.tar.gz
+cd trend_docker
+docker build -t kgh07/gpu_trend_monitor:v1.0 .
+
+#####################
+
+docker run --rm -it \
+  --device=/dev/kfd --device=/dev/dri \
+  --group-add 44 --group-add 992 \
+  -e QWEN_URL="http://172.17.0.1:2242/v1/chat/completions" \
+  -v ~/gpu_trend_data:/app/data \
+  kgh07/gpu_trend_monitor:v1.0 \
+  --device 0 --log-path /app/data/gpu_temp_log.jsonl -n 10 --interval 10
+
+  
